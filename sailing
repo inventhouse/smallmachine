@@ -2,7 +2,7 @@
 # Copyright (c) 2019-2025 Benjamin Holt -- MIT License
 
 """
-Tiny, seemingly pointless, interactive fiction game to play with `smallmachine`
+Tiny, seemingly pointless, interactive fiction game to play with a state machine.
 """
 from pprint import pp
 import random
@@ -21,6 +21,7 @@ def adlib(x, joiner=" "):
     if type(x) is list:
         return adlib(random.choice(x))
     return str(x)
+
 
 class Location:
     def __init__(self, name, description):
@@ -43,10 +44,6 @@ class Location:
         l = destination if destination is not ... else state
         if isinstance(l, cls):
             return l.enter(state=state, destination=destination, **ctx)
-
-
-# def input_in(*args):
-#     return lambda input, **_: input in args
 #####
 
 
@@ -56,10 +53,12 @@ above = Location(
     ("You are on the deck of a small sailboat on a", ["calm", "serene", "blue", "clear", "glistening",], "sea; an open hatch leads down.")
 )
 
+
 below = Location(
     "below", 
     ("You are in the", ["cozy", "homey", "snug",], "cabin of a small boat, with just enough room for a bunk and a tiny desk with a logbook; a hatch leads up.")
 )
+
 
 messages = {
     "sail": ("You", ["set", "adjust", "tack",], "your sail", ["to", "toward", "for"], "{}."),
@@ -82,10 +81,12 @@ messages = {
 def not_crash_test(input, **_):
     return input != "crash"
 
+
 @pretty
 def sail_action(**_):
     s = input("Where to? > ")
     return adlib(messages["sail"]).format(s)
+
 
 log_entries = [(["Fair", "Nice", "Brisk",], "weather."),]  # HACK: Put one bogus entry in 'cos random.choice (in adlib) can't handle an empty list
 @pretty
@@ -93,6 +94,7 @@ def write_action(**_):
     s = input("What do you want to say? > ")
     log_entries.append(s)
     return "Written"
+
 
 @pretty
 def explode_action(**_):
