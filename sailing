@@ -28,16 +28,20 @@ class Location:
         self.name = name
         self.description = description
 
+
     # Demonstrate a simple enter-action pattern
     def enter(self, **_):
         """Enter action: describe the location"""
         return adlib(self.description)
 
+
     def __str__(self):
         return self.name
 
+
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.name}>"
+
 
     @classmethod
     def enter_action(cls, state, destination, **ctx):
