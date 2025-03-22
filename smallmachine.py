@@ -1,4 +1,4 @@
-# SmallMachine: Copyright © 2021-2024 Benjamin Holt - MIT License
+# SmallMachine: Copyright © 2021-2025 Benjamin Holt - MIT License
 
 from collections import deque
 #####
@@ -6,7 +6,7 @@ from collections import deque
 
 ###  State Machine Core  ###
 class StateMachine(object):
-    """A state machine engine that makes minimal assumptions but includes a few nice conveniences and powerful extensibility.
+    """A small state machine engine with powerful flexibility and a few nice conveniences.
     """
 
     def __init__(self, rules, state, tracer=False, history=10):
