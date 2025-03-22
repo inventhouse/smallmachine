@@ -9,7 +9,7 @@ import random
 import time
 
 from helpers import in_test, pretty
-import smallmachine as sm
+from  smallmachine import StateMachine
 #####
 
 
@@ -131,10 +131,9 @@ rules = {
 
 
 ###  World  ###
-world = sm.StateMachine(rules, "start")
-# world = sm.StateMachine(rules, "start", tracer=True)
-# world = sm.StateMachine(rules, "start", tracer="***")
-# pp(world.pp_dict())
+world = StateMachine(rules, "start")
+# world = StateMachine(rules, "start", tracer=True)  # Default prefix
+# world = StateMachine(rules, "start", tracer="***")  # Custom prefix
 #####
 
 
