@@ -27,15 +27,18 @@ class StateMachine(object):
         self.history = deque(maxlen=history)
         self._input_count = 0
 
+
     @property
     def state(self):
         return self._state
+
 
     @state.setter
     def state(self, s):
         if s not in self.rules:
             raise RuntimeError(f"State '{s}' is not in the ruleset")
         self._state = s
+
 
     def __call__(self, input):
         """Tests an input against the explicit rules for the current state plus the implicit rules from the ... (Ellipsis) state.
@@ -79,29 +82,40 @@ class StateMachine(object):
             e.add_note(f"  {self._input_count}: {self.state}('{input}') >> 💥\n{type(e).__name__}: {e}")
             raise
 
+
     _transition_fmt = "{input_count}: {state}('{input}') > {label}: {result} -- {response} --> {new_state}"
-    def _trace(self, **context):
+    def _trace(self, **transition):
         if self.tracer:
             if callable(self.tracer):
-                self.tracer(self._transition_fmt, **context)
+                self.tracer(self._transition_fmt, **transition)
             else:
                 prefix = self.tracer if self.tracer is not True else "T>"
-                print(f"{prefix} {self._transition_fmt.format(**context)}")
+                print(f"{prefix} {self._transition_fmt.format(**transition)}")
 
-        # History and folding
-        if self.history and context["state"] == context["new_state"]:
-            context["loop_count"] = 1
+        # History and Loop-Folding
+        if self.history and transition["state"] == transition["new_state"]:
+            transition["loop_count"] = 1
             prev = self.history[-1]
-            if "loop_count" in prev and prev["state"] == context["state"]:
-                context["loop_count"] += prev["loop_count"]
+            if "loop_count" in prev and prev["state"] == transition["state"]:
+                transition["loop_count"] += prev["loop_count"]
                 self.history.pop()
-        self.history.append(context)
+        self.history.append(transition)
+
 
     def build_trace(self):
         """Returns trace lines from the history of transitions."""
-        for context in self.history:
-            lc = context.get("loop_count", 0)
+        for transition in self.history:
+            lc = transition.get("loop_count", 0)
             if lc > 1:
-                yield f"    ({lc - 1} loops in {context['state']} elided)"
-            yield self._transition_fmt.format(**context)
+                yield f"    ({lc - 1} loops in {transition['state']} elided)"
+            yield self._transition_fmt.format(**transition)
+
+
+    def pp_dict(self):
+        """Returns a dictionary of the current machine's status for inspecting or pretty-printing."""
+        return {
+            "Rules": self.rules,
+            "State": self.state,
+            "Trace": tuple(self.build_trace()),
+        }
 #####
