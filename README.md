@@ -154,7 +154,7 @@ And that is how we can go from a raw data format we haven't seen before to a ful
 To Do
 -----
 - [ ] FIXME: don't fold until the third loop (eliding a single loop is just losing information)
-- [ ] Unit tests
+- [x] Unit tests
 - [ ] Package for PyPI
 
 ### Doneyard
