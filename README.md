@@ -43,13 +43,13 @@ The two trickiest aspects of Python I use are `for...else` to raise `ValueError`
 Note that there is only the `StateMachine` class, I found no use for "State" nor "Rule/Transition" classes, they just made things more complicated and less powerful; I'm puzzled that every other state machine module I've looked at on PyPI uses such constructs.
 
 ### Helpers
-There is a `helpers.py` file with some useful "accessories", most of which help to make state machine traces and rulesets more readable; the `pretty` decorator is particularly interesting.
+There is a `helpers.py` file with some useful "accessories", most of which help to make state machine traces and rulesets more readable when (pretty) printed; the `pretty` decorator is particularly interesting.
 
 ### Examples
 #### Sailing Game
 I've mainly used this engine (and its predecessors) to write parsers, but it's capable of _many_ other things, so I thought it would be fun to write the smallest interactive fiction ("text-based adventure") game I could come up with that is in any sense playable.
 
-It uses game locations as its primary states, and their associated rules implement the actions the player can take.  While the state machine is mostly transition-action based, the `Location` class implements a simple enter-action pattern for room descriptions and `look`.
+It uses game locations as its primary states, and their associated rules implement the actions the player can take.  While StateMachine is primarily transition-action based, the `Location` class implements a simple enter-action pattern for room descriptions and `look`.
 
 It also implements some actions for interacting with and testing the underlying machine.
 
@@ -61,14 +61,14 @@ One of the things state machines excel at is parsing data that has some sort of 
 ##### Saved Zoom Chats
 The video-meeting platform Zoom allows participants to send text messages to the group and each other; there is an option to save the chat to a file, however the format of the chat log is _extremely_ verbose, for example reactions to messages appear like messages themselves, message threads are flattened, and other issues.
 
-Let's write a parser that will re-thread the messages, roll-up reactions, and maybe do some filtering as well.
+Here we'll write a parser that will re-thread the messages, roll-up reactions, and even do some filtering as well.
 
 ##### Step 0: Format and Input Fixture
 See [zoom-chat-parser-0](Examples/zoom-chat-parser-0)
 
 The first thing to do is look at the format of the data: is it actually structured enough to write a parser for?  How are segments delimited?  How do they relate?  Start to get some ideas for how to take the data apart.
 
-It can be helpful to collect and/or construct a snippet of the data to be parsed that exercises different aspects of the format to work from; once we're at the point of running full "real" data through our parser, we'll add to this as we find things it doesn't cope with.
+It can be helpful to collect and/or construct a snippet of the data to be parsed that exercises different aspects of the format to work from; once we're at the point of running full-sized "real" data through our parser, we'll add to this as we find things it doesn't represent.
 
 ```python
 chat_lines = """
@@ -153,11 +153,6 @@ And that is how we can go from a raw data format we haven't seen before to a ful
 
 To Do
 -----
-- [x] Examples dir
-    - [x] README (in examples dir or a section in the main readme?)
-    - [x] Sailing game
-    - [x] Build zoom chat parser step-by-step
-        - [x] Add links to files
 - [ ] FIXME: don't fold until the third loop (eliding a single loop is just losing information)
 - [ ] Unit tests
 - [ ] Package for PyPI
@@ -165,5 +160,10 @@ To Do
 ### Doneyard
 - [x] Finish README
     - [x] Move detailed documentation here instead
+- [x] Examples dir
+    - [x] README (in examples dir or a section in the main readme?)
+    - [x] Sailing game
+    - [x] Build zoom chat parser step-by-step
+        - [x] Add links to files
 
 ---
