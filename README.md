@@ -19,7 +19,7 @@ Each rule consists of a label, test, action, and destination, which work as foll
 
 - **Label:** Usually a string, used for identifying the "successful" rule when tracing.
 
-- **Test:** Called with context arguments; if the result is truish, the rule succeeds, no other rules are tested.  If the test is not callable, it is compared (equal) to the input.
+- **Test:** Called with context arguments; if the result is truish, the rule succeeds, and no other rules are tested.  If the test is not callable, it is compared (equal) to the input.
 
 - **Action:** When a test succeeds, the action is called with context arguments, including `result` from the test above; the action's `response` will be included in the context arguments for the tracer and returned by this call.  If the action is not callable, it is returned as the response.
 
@@ -29,7 +29,7 @@ At the end of a successful transition, the internal and any custom tracer is cal
 
 Tracing
 -------
-State machines can be very hard to debug if you can't track their operation and transitions, so the engine automatically traces each transition.  By default it keeps a `history` of the last 10 transitions that changed state ("loops" within a state are counted but only the last transition is retained); this is formatted into a traceback and added to any exceptions that may be raised to help understand "where the machine was" and how it got there.
+State machines can be very hard to debug if you can't track their operation, so the engine automatically traces each transition.  By default it keeps a `history` of the last 10 transitions that changed state ("loops" within a state are counted but only the last is retained); this is formatted into a traceback and added to any exceptions that may be raised to help understand "where the machine was" and how it got there.
 
 State machine instances can also take a `tracer` argument that either enables built-in real-time printing of the transitions, or if it is callable, it will be called with a format and the transition context keyword arguments.
 
@@ -40,13 +40,15 @@ The best way to really understand how it works is to read the code.  The impleme
 
 The two trickiest aspects of Python I use are `for...else` to raise `ValueError` if no rule accepted the input, and `**context` to make a lot of different information available to tests and actions while allowing them to pluck out just what they need and ignore the rest.  For the second, it's important to understand how parameters in Python really work, particularly how "required" and "optional" parameters in a definition are distinct from "positional" and "keyword" arguments in a call.  I definitely recommend looking at the helpers and examples to see how useful this can be.
 
-Note that there is only the `StateMachine` class, I found no use for "State" nor "Rule/Transition" classes, they just made things more complicated and less powerful; I'm puzzled that every other state machine module I've looked at on PyPI uses such constructs.
+Note that there is only the `StateMachine` class, I found no use for "State" nor "Rule/Transition" classes, they just made things more complicated and less powerful; frankly I'm puzzled that every other state machine module I've looked at on PyPI uses such constructs.
 
 ### Helpers
 There is a `helpers.py` file with some useful "accessories", most of which help to make state machine traces and rulesets more readable when (pretty) printed; the `pretty` decorator is particularly interesting.
 
 ### Examples
-#### Sailing Game
+#### Smooth Sailing Game
+See [sailing](Examples/smooth-sailing)
+
 I've mainly used this engine (and its predecessors) to write parsers, but it's capable of _many_ other things, so I thought it would be fun to write the smallest interactive fiction ("text-based adventure") game I could come up with that is in any sense playable.
 
 It uses game locations as its primary states, and their associated rules implement the actions the player can take.  While StateMachine is primarily transition-action based, the `Location` class implements a simple enter-action pattern for room descriptions and `look`.
@@ -59,7 +61,7 @@ It also implements some actions for interacting with and testing the underlying 
 One of the things state machines excel at is parsing data that has some sort of structure.  This engine in particular has features that really help make developing a parser easier, and dare I say, fun; let's write one together.
 
 ##### Saved Zoom Chats
-The video-meeting platform Zoom allows participants to send text messages to the group and each other; there is an option to save the chat to a file, however the format of the chat log is _extremely_ verbose, for example reactions to messages appear like messages themselves, message threads are flattened, and other issues.
+The video-meeting platform Zoom allows participants to send text messages to the group and each other; there is an option to save the chat to a file, however the format of the chat log is _extremely_ verbose, for example emoji reactions to messages appear like messages themselves, message threads are flattened, and other issues.
 
 Here we'll write a parser that will re-thread the messages, roll-up reactions, and even do some filtering as well.
 
