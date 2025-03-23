@@ -36,9 +36,9 @@ State machine instances can also take a `tracer` argument that either enables bu
 More
 ----
 ### Reading the Code
-The best way to really understand how it works is to read the code.  The implementation really is very small - just under 70 lines of code (plus another ~40 lines of comments and blanks) - and the core evaluation engine is under a dozen lines in the `try` block of `StateMachine.__call__`; I think most use-cases I've had for it were bigger than the StateMachine class itself.
+The best way to fully understand how it works is to read the code.  The implementation really is very small - just under 70 lines of code (plus another ~40 lines of comments and blanks) - and the core evaluation engine is under a dozen lines in the `try` block of `StateMachine.__call__`; I think most use-cases I've had for it were bigger than the StateMachine class itself.
 
-The two trickiest aspects of Python I use are `for...else` to raise `ValueError` if no rule accepted the input, and `**context` to make a lot of different information available to tests and actions while allowing them to pluck out just what they need and ignore the rest.  For the second, it's important to understand how parameters in Python really work, particularly how "required" and "optional" parameters in a definition are distinct from "positional" and "keyword" arguments in a call.  I definitely recommend looking at the helpers and examples to see how useful this can be.
+The two trickiest aspects of Python I use are `for...else` to raise `ValueError` if no rule accepted the input, and `**context` to make a lot of different information available to tests and actions while allowing them to pluck out just what they need and ignore the rest.  For the second, it's important to understand how parameters in Python actually work; particularly how "required" and "optional" parameters in a definition are distinct from "positional" and "keyword" arguments in a call.  I definitely recommend looking at the helpers and examples to see how useful this can be.
 
 Note that there is only the `StateMachine` class, I found no use for "State" nor "Rule/Transition" classes, they just made things more complicated and less powerful; frankly I'm puzzled that every other state machine module I've looked at on PyPI uses such constructs.
 
@@ -47,7 +47,7 @@ There is a `helpers.py` file with some useful "accessories", most of which help 
 
 ### Examples
 #### Smooth Sailing Game
-See [sailing](Examples/smooth-sailing)
+See [smooth-sailing](Examples/smooth-sailing)
 
 I've mainly used this engine (and its predecessors) to write parsers, but it's capable of _many_ other things, so I thought it would be fun to write the smallest interactive fiction ("text-based adventure") game I could come up with that is in any sense playable.
 
@@ -70,7 +70,7 @@ See [zoom-chat-parser-0](Examples/zoom-chat-parser-0)
 
 The first thing to do is look at the format of the data: is it actually structured enough to write a parser for?  How are segments delimited?  How do they relate?  Start to get some ideas for how to take the data apart.
 
-It can be helpful to collect and/or construct a snippet of the data to be parsed that exercises different aspects of the format to work from; once we're at the point of running full-sized "real" data through our parser, we'll add to this as we find things it doesn't represent.
+It can be helpful to collect and/or construct a snippet of the data to be parsed that exercises different aspects of the format to work from; once we're at the point of running full-sized "real" data through our parser, we can add to this as we find things it doesn't represent.
 
 ```python
 chat_lines = """
@@ -157,6 +157,7 @@ To Do
 -----
 - [ ] FIXME: don't fold until the third loop (eliding a single loop is just losing information)
 - [x] Unit tests
+    - [ ] Tests for helpers
 - [ ] Package for PyPI
 
 ### Doneyard
