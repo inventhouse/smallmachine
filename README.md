@@ -37,14 +37,15 @@ State machine instances can also take a `tracer` argument that either enables bu
 
 To Do
 -----
-- [x] Finish README
-    - [x] Move most documentation here instead
-- [ ] Examples
+- [ ] Examples dir
+    - [ ] README (in examples dir or a section in the main readme?)
     - [x] sailing game
     - [ ] build zoom chat parser step-by-step
 - [ ] Unit tests
 - [ ] Package for PyPI
 
 ### Doneyard
+- [x] Finish README
+    - [x] Move detailed documentation here instead
 
 ---
