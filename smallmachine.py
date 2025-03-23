@@ -12,13 +12,13 @@ class StateMachine(object):
     def __init__(self, rules, state, tracer=False, history=10):
         """Create a state machine instance which can be called with input and returns output from evaluating the rules for the current state.
 
-        The rules dictionary maps each state to a list of rule tuples, each of which includes a label, a test, an action, and a destination; more about rule elements in the __call__ documentation.
-
-        Rules associated with the special ... (Ellipsis) state are implicitly added to all states' rules, and evaluated after explicit rules.
+        The rules dictionary maps each state to a list of rule tuples, each of which includes a label, a test, an action, and a destination.
 
         State is simply the starting state for the machine.
 
-        Tracer can enable built-in tracing of machine transitions or can be an optional callable that takes a format and context arguments; it is called after a transition.
+        Tracer can enable built-in printing of machine transitions; `True` enables tracing with a default prefix `T>`, anything else "truish" is used as a custom prefix.  Or if it is a callable it will be called a format and context arguments at the end of each transition.
+
+        History is the number of state-changing transitions to retain for traceback; can be None for unlimited or 0 to disable.
         """
         # rules dict looks like { state: [(label, test, action, new_state), ...], ...}
         self.rules = rules
@@ -43,17 +43,7 @@ class StateMachine(object):
     def __call__(self, input):
         """Tests an input against the explicit rules for the current state plus the implicit rules from the ... (Ellipsis) state.
 
-        As the rules are evaluated, a context dictionary is built; these keys and values are available to callable rule components as keyword arguments.  Context arguments available when rules are evaluated are: machine, state, input_count, input, and elements of the currently evaluating rule: label, test, action, and dest.
-
-        Each rule consists of a label, test, action, and destination, which work as follows:
-
-        - Label: usually a string, used for identifying the "successful" rule when tracing.
-
-        - Test: called with context arguments; if the result is truish, the rule succeeds, no other rules are tested.  If the test is not callable, it is compared (equal) to the input.
-
-        - Action: when a test succeeds, the action is called with context arguments, including 'result' from the test above; the action's response will be included in the context arguments for the tracer and returned by this call.  If the action is not callable, it is returned as the response.
-
-        - Destination: finally, the machine will transition to the destination state unless the destination is ... (Ellipsis); in that case, the action can modify the state directly (e.g. via 'machine' in the context) to push/pop states, implement non-deterministic transitions, etc.
+        As the rules are evaluated, a context dictionary is built; these keys and values are available to callable rule components as keyword arguments.  When a rule's test succeeds, its action is evaluated, the machine transitions, and the response is returned; if no rule succeeds, `ValueError` is raised.
 
         At the end of a successful transition, the internal and any custom tracer is called with a transition format and context arguments.
         """
@@ -85,6 +75,7 @@ class StateMachine(object):
 
     _transition_fmt = "{input_count}: {state}('{input}') > {label}: {result} -- {response} --> {new_state}"
     def _trace(self, **transition):
+        """Built-in tracing of transitions or calling of optional custom tracer, and building traceback history."""
         if self.tracer:
             if callable(self.tracer):
                 self.tracer(self._transition_fmt, **transition)
@@ -103,7 +94,7 @@ class StateMachine(object):
 
 
     def build_trace(self):
-        """Returns trace lines from the history of transitions."""
+        """Returns formatted trace lines from the history of transitions."""
         for transition in self.history:
             lc = transition.get("loop_count", 0)
             if lc > 1:
