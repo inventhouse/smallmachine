@@ -69,7 +69,7 @@ class StateMachine(object):
             if self.history:
                 trace_lines = "\n  ".join(self.build_trace())
                 e.add_note(f"StateMachine Traceback (most recent last):\n  {trace_lines}")
-            e.add_note(f"  {self._input_count}: {self.state}('{input}') >> 💥\n{type(e).__name__}: {e}")
+            e.add_note(f"  {self._input_count}: {self.state}('{input}') > {context['label']} >> 💥\n{type(e).__name__}: {e}")
             raise
 
 
@@ -103,7 +103,7 @@ class StateMachine(object):
 
 
     def pp_dict(self):
-        """Returns a dictionary of the current machine's status for inspecting or pretty-printing."""
+        """Returns a dictionary of the machine's current status for inspecting or pretty-printing."""
         return {
             "Rules": self.rules,
             "State": self.state,
