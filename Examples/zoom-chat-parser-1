@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# zoom-chat-parser: Copyright © 2024-2025 Benjamin Holt - MIT License
+
+from helpers import pretty
+from smallmachine import StateMachine
+#####
+
+
+###  Input Fixture  ###
+chat_lines = """
+15:01:39 From Michael M to Everyone:
+    When are we going to have AI run team summit?
+15:01:45 From Jared R to Everyone:
+    Anyone still remember NFTs?
+15:01:47 From Aaron S to Everyone:
+    Replying to "When are we going to..."
+    
+    We already do
+15:01:53 From Aaron S to Everyone:
+    Replying to "When are we going to..."
+    
+    Gabe.ai
+15:01:53 From Michael M to Everyone:
+    Reacted to "We already do" with 😂
+15:03:00 From Matt T to Ben H:
+    Hi BenH!
+15:04:53 From Aaron S to Ben H:
+    Replying to "When are we going to..."
+    
+    Right??
+15:07:18 From Becca S to Everyone:
+    Reacted to "Anyone still remember ..." with 👏🏼
+15:07:20 From Becca S to Everyone:
+    Removed a 👏🏼 reaction from "Anyone still remember ..."
+"""
+#####
+
+
+###  Chat Parser  ###
+class ChatParser:
+    def __init__(self):
+        rules = {
+            "start": [],
+            ...: [
+                ("null", pretty((lambda **_: True), "true"), None, ...),
+            ],
+        }
+        self.parser = StateMachine(rules, "start", tracer=True)
+
+    def __call__(self, lines):
+        for line in lines:
+            self.parser(line)
+#####
+
+
+###  Main  ###
+if __name__ == "__main__":
+    import sys
+    chat_parser = ChatParser()
+    chat_file = sys.argv[1] if len(sys.argv) > 1 else None
+    if chat_file:
+        with open(chat_file) as f:
+            chat_parser(f)
+    else:
+        chat_parser(chat_lines.split("\n"))
+#####

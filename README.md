@@ -49,20 +49,116 @@ There is a `helpers.py` file with some useful "accessories", most of which help 
 #### Sailing Game
 I've mainly used this engine (and its predecessors) to write parsers, but it's capable of _many_ other things, so I thought it would be fun to write the smallest interactive fiction ("text-based adventure") game I could come up with that is in any sense playable.
 
-It uses game locations as its primary states, and their associated rules implement the actions the player can take.  While the state machine is mostly transition-action based, the `Location` class implements a simple enter-action pattern for room descriptions.
+It uses game locations as its primary states, and their associated rules implement the actions the player can take.  While the state machine is mostly transition-action based, the `Location` class implements a simple enter-action pattern for room descriptions and `look`.
 
 It also implements some actions for interacting with and testing the underlying machine.
 
-Aside, not really related to the state machine, but I'm quite pleased with the `adlib` function for templating descriptions and other messages so the game is a _little_ more dynamic, check it out while you're looking at this example.
+(Aside, not really related to the state machine, but I'm quite pleased with the `adlib` function for templating descriptions and other messages so the game is a _little_ more dynamic, check it out while you're looking at this example.)
+
+#### Zoom Chat Parser
+One of the things state machines excel at is parsing data that has some sort of structure.  This engine in particular has features that really help make developing a parser easier, and dare I say, fun; let's write one together.
+
+##### Saved Zoom Chats
+The video-meeting platform Zoom allows participants to send text messages to the group and each other; there is an option to save the chat to a file, however the format of the chat log is _extremely_ verbose, for example reactions to messages appear like messages themselves, message threads are flattened, and other issues.
+
+Let's write a parser that will re-thread the messages, roll-up reactions, and maybe do some filtering as well.
+
+##### Step 0: Format and Input Fixture
+See [zoom-chat-parser-0](Examples/zoom-chat-parser-0)
+
+The first thing to do is look at the format of the data: is it actually structured enough to write a parser for?  How are segments delimited?  How do they relate?  Start to get some ideas for how to take the data apart.
+
+It can be helpful to collect and/or construct a snippet of the data to be parsed that exercises different aspects of the format to work from; once we're at the point of running full "real" data through our parser, we'll add to this as we find things it doesn't cope with.
+
+```python
+chat_lines = """
+15:01:39 From Michael M to Everyone:
+    When are we going to have AI run team summit?
+15:01:45 From Jared R to Everyone:
+    Anyone still remember NFTs?
+...
+"""
+```
+Looks like messages are introduced with a line consisting of a timestamp, from, and to, and the messages themselves are indented; reactions and threaded messages tie back to earlier messages with a prefix, we can work with this.
+
+##### Step 1: Null Parser
+See [zoom-chat-parser-1](Examples/zoom-chat-parser-1)
+
+`diff -u Examples/zoom-chat-parser-0 Examples/zoom-chat-parser-1`
+
+To get started, we'll build a minimal scaffold around this fixture to easily run it through a state machine instance that does nothing but trace every line.  That's it.
+
+```
+T> 1: start('') > null: True -- None --> start
+T> 2: start('15:01:39 From Michael M to Everyone:') > null: True -- None --> start
+T> 3: start('    When are we going to have AI run team summit?') > null: True -- None --> start
+T> 4: start('15:01:45 From Jared R to Everyone:') > null: True -- None --> start
+T> 5: start('    Anyone still remember NFTs?') > null: True -- None --> start
+...
+```
+
+##### Step 2: Develop Tests and States
+See [zoom-chat-parser-2](Examples/zoom-chat-parser-2)
+
+`diff -u Examples/zoom-chat-parser-1 Examples/zoom-chat-parser-2`
+
+Now that we have some input, a machine, and a way to run it, we can start building the tests we need to parse the input and the states we need to organize those tests; our parser begins to take shape.
+
+```
+T> 1: start('') > blank: <re.Match object; span=(0, 0), match=''> -- None --> start
+T> 2: start('15:01:39 From Michael M to Everyone:') > header: <re.Match object; span=(0, 36), match='15:01:39 From Michael M to Everyone:'> -- None --> message
+T> 3: message('    When are we going to have AI run team summit?') > line: <re.Match object; span=(0, 49), match='    When are we going to have AI run team summit?> -- None --> message_lines
+T> 4: message_lines('15:01:45 From Jared R to Everyone:') > header: <re.Match object; span=(0, 34), match='15:01:45 From Jared R to Everyone:'> -- None --> message
+T> 5: message('    Anyone still remember NFTs?') > line: <re.Match object; span=(0, 31), match='    Anyone still remember NFTs?'> -- None --> message_lines
+```
+
+Once it runs successfully over our input snippet, we can start running it over full chat logs and find cases we missed, add them to our fixture, and make our parser robust enough to process the "real" data.
+
+Already we have a parser!  Sure, it doesn't _do_ anything with the data it parses yet, but we can read through the trace and watch it navigating the input.
+
+##### Step 3: Data Model and Actions
+See [zoom-chat-parser-3](Examples/zoom-chat-parser-3)
+
+`diff -u Examples/zoom-chat-parser-2 Examples/zoom-chat-parser-3`
+
+Some parsers are pure transformers and don't need a data model, their actions will just return modified versions of the input; this one, however, needs a threaded message model, actions to build that model from the input, and some helpers.  This is, of course, is about the hardest part, but the real magic was being able to work through all of the data navigation first, and now we can just focus on modeling and plumbing.
+
+```
+(ChatMessage(time_str='15:01:39',
+             sender='Michael M',
+             recipient='Everyone',
+             message_lines=['When are we going to have AI run team summit?'],
+             replies=[ChatMessage(time_str='15:01:47',
+...
+```
+
+##### Step 4: Do Things with Our Data
+See [zoom-chat-parser-4](Examples/zoom-chat-parser-4)
+
+`diff -u Examples/zoom-chat-parser-3 Examples/zoom-chat-parser-4`
+
+At this point we have raw input parsing into our data model; we can do whatever we want with it!  Here, we're going to do some filtering and format the threaded messages so they'll look good when re-posted in Slack.
+
+```
+_(15:01) *Michael M*:_
+    When are we going to have AI run team summit?
+    _(15:01) *Aaron S*:_
+        We already do
+        😂 1
+```
+
+And that is how we can go from a raw data format we haven't seen before to a full-fledged parser-transformer in a one-evening hack.
 
 ---
 
 To Do
 -----
-- [ ] Examples dir
-    - [ ] README (in examples dir or a section in the main readme?)
-    - [x] sailing game
-    - [ ] build zoom chat parser step-by-step
+- [x] Examples dir
+    - [x] README (in examples dir or a section in the main readme?)
+    - [x] Sailing game
+    - [x] Build zoom chat parser step-by-step
+        - [x] Add links to files
+- [ ] FIXME: don't fold until the third loop (eliding a single loop is just losing information)
 - [ ] Unit tests
 - [ ] Package for PyPI
 
