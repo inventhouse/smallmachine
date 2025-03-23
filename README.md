@@ -5,7 +5,7 @@ SmallMachine is a state machine engine that aims to be simple, powerful, and deb
 
 States
 ------
-States are simply dictionary keys (i.e. hashable), so they can be pretty much anything you want from simple strings to custom classes.  Instances only require a rules dictionary and a starting state.
+States are simply dictionary keys, so they can be pretty much anything (hashable) you want from simple strings to custom classes.  Instances only require a rules dictionary and a starting state.
 
 The rules dictionary maps each state to a list of rule tuples, each of which includes a label, a test, an action, and a destination.  Rules associated with the special `...` (Ellipsis) state are implicitly added to all states' rules, and evaluated after explicit rules.
 
