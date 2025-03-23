@@ -84,11 +84,9 @@ class TestStateMachine(TestCase):
 
 
     def test_state_machine_history(self):
-        self.machine("b")
-        self.machine("1")
-        self.machine("2")
-        self.machine("c")
-        self.machine("a")
+        for i in "b12ca":
+            self.machine(i)
+
         self.assertEqual(len(self.machine.history), 4)  # One loop in B should be folded
         expected_history = [
             {"input_count": 1, "state": "A", "input": "b", "label": "move to b", "result": True, "response": "A-B", "new_state": "B"},
