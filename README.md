@@ -36,6 +36,9 @@ State machine instances can also take a `tracer` argument that either enables bu
 More
 ----
 ### Reading the Code
+
+See [smallmachine.py](smallmachine.py)
+
 The best way to fully understand how it works is to read the code.  The implementation really is very small - just under 70 lines of code (plus another ~40 lines of comments and blanks) - and the core evaluation engine is under a dozen lines in the `try` block of `StateMachine.__call__`; I think most use-cases I've had for it were bigger than the StateMachine class itself.
 
 The two trickiest aspects of Python I use are `for...else` to raise `ValueError` if no rule accepted the input, and `**context` to make a lot of different information available to tests and actions while allowing them to pluck out just what they need and ignore the rest.  For the second, it's important to understand how parameters in Python actually work; particularly how "required" and "optional" parameters in a definition are distinct from "positional" and "keyword" arguments in a call.  I definitely recommend looking at the helpers and examples to see how useful this can be.
@@ -43,7 +46,10 @@ The two trickiest aspects of Python I use are `for...else` to raise `ValueError`
 Note that there is only the `StateMachine` class, I found no use for "State" nor "Rule/Transition" classes, they just made things more complicated and less powerful; frankly I'm puzzled that every other state machine module I've looked at on PyPI uses such constructs.
 
 ### Helpers
-There is a `helpers.py` file with some useful "accessories", most of which help to make state machine traces and rulesets more readable when (pretty) printed; the `pretty` decorator is particularly interesting.
+
+See [helpers.py](helpers.py)
+
+There is a `helpers` module with some useful "accessories", most of which help to make state machine traces and rulesets more readable when (pretty) printed; the `pretty` decorator is particularly interesting.
 
 ### Examples
 #### Smooth Sailing Game
