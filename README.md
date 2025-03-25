@@ -1,7 +1,7 @@
 SmallMachine
 ============
 
-SmallMachine is a state machine engine that aims to be simple, powerful, and debuggable; these state machine instances work from a dictionary of states and associated rule lists.
+SmallMachine is a [state machine](https://en.wikipedia.org/wiki/Finite-state_machine) engine that aims to be simple, powerful, and debuggable; these state machine instances work from a dictionary of states and associated rule lists.
 
 States
 ------
@@ -37,7 +37,7 @@ More
 ----
 ### Reading the Code
 
-See [smallmachine.py](smallmachine.py)
+_See [smallmachine.py](smallmachine.py)_
 
 The best way to fully understand how it works is to read the code.  The implementation really is very small - just under 70 lines of code (plus another ~40 lines of comments and blanks) - and the core evaluation engine is under a dozen lines in the `try` block of `StateMachine.__call__`; I think most use-cases I've had for it were bigger than the StateMachine class itself.
 
@@ -47,13 +47,14 @@ Note that there is only the `StateMachine` class, I found no use for "State" nor
 
 ### Helpers
 
-See [helpers.py](helpers.py)
+_See [helpers.py](helpers.py)_
 
 There is a `helpers` module with some useful "accessories", most of which help to make state machine traces and rulesets more readable when (pretty) printed; the `pretty` decorator is particularly interesting.
 
 ### Examples
 #### Smooth Sailing Game
-See [smooth-sailing](Examples/smooth-sailing)
+
+_See [smooth-sailing](Examples/smooth-sailing)_
 
 I've mainly used this engine (and its predecessors) to write parsers, but it's capable of _many_ other things, so I thought it would be fun to write the smallest interactive fiction ("text-based adventure") game I could come up with that is in any sense playable.
 
@@ -72,7 +73,8 @@ The video-meeting platform Zoom allows participants to send text messages to the
 Here we'll write a parser that will re-thread the messages, roll-up reactions, and even do some filtering as well.
 
 ##### Step 0: Format and Input Fixture
-See [zoom-chat-parser-0](Examples/zoom-chat-parser-0)
+
+_See [zoom-chat-parser-0](Examples/zoom-chat-parser-0)_
 
 The first thing to do is look at the format of the data: is it actually structured enough to write a parser for?  How are segments delimited?  How do they relate?  Start to get some ideas for how to take the data apart.
 
@@ -90,7 +92,8 @@ chat_lines = """
 Looks like messages are introduced with a line consisting of a timestamp, from, and to, and the messages themselves are indented; reactions and threaded messages tie back to earlier messages with a prefix, we can work with this.
 
 ##### Step 1: Null Parser
-See [zoom-chat-parser-1](Examples/zoom-chat-parser-1)
+
+_See [zoom-chat-parser-1](Examples/zoom-chat-parser-1)_
 
 `diff -u Examples/zoom-chat-parser-0 Examples/zoom-chat-parser-1`
 
@@ -106,7 +109,8 @@ T> 5: start('    Anyone still remember NFTs?') > null: True -- None --> start
 ```
 
 ##### Step 2: Develop Tests and States
-See [zoom-chat-parser-2](Examples/zoom-chat-parser-2)
+
+_See [zoom-chat-parser-2](Examples/zoom-chat-parser-2)_
 
 `diff -u Examples/zoom-chat-parser-1 Examples/zoom-chat-parser-2`
 
@@ -125,7 +129,8 @@ Once it runs successfully over our input snippet, we can start running it over f
 Already we have a parser!  Sure, it doesn't _do_ anything with the data it parses yet, but we can read through the trace and watch it navigating the input.
 
 ##### Step 3: Data Model and Actions
-See [zoom-chat-parser-3](Examples/zoom-chat-parser-3)
+
+_See [zoom-chat-parser-3](Examples/zoom-chat-parser-3)_
 
 `diff -u Examples/zoom-chat-parser-2 Examples/zoom-chat-parser-3`
 
@@ -141,7 +146,7 @@ Some parsers are pure transformers and don't need a data model, their actions wi
 ```
 
 ##### Step 4: Do Things with Our Data
-See [zoom-chat-parser-4](Examples/zoom-chat-parser-4)
+_See [zoom-chat-parser-4](Examples/zoom-chat-parser-4)_
 
 `diff -u Examples/zoom-chat-parser-3 Examples/zoom-chat-parser-4`
 
