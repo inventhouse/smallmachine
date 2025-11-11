@@ -29,7 +29,14 @@ class Location:
         self.description = description
 
 
-    # Demonstrate a simple enter-action pattern
+    @classmethod
+    def enter_action(cls, state, destination, **ctx):
+        # Demonstrate a simple enter-action pattern
+        l = destination if destination is not ... else state
+        if isinstance(l, cls):
+            return l.enter(**ctx)
+
+
     def enter(self, **_):
         """Enter action: describe the location"""
         return adlib(self.description)
@@ -41,13 +48,6 @@ class Location:
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.name}>"
-
-
-    @classmethod
-    def enter_action(cls, state, destination, **ctx):
-        l = destination if destination is not ... else state
-        if isinstance(l, cls):
-            return l.enter(state=state, destination=destination, **ctx)
 #####
 
 
