@@ -67,6 +67,9 @@ It also implements some actions for interacting with and testing the underlying 
 #### Zoom Chat Parser
 One of the things state machines excel at is parsing data that has some sort of structure.  This engine in particular has features that really help make developing a parser easier, and dare I say, fun; let's write one together.
 
+> [!IMPORTANT]
+> Zoom has changed the format for saved chat logs multiple times since this was written; while this parser is no longer useful in its own right, the tutorial is still very instructive for building them.
+
 ##### Saved Zoom Chats
 The video-meeting platform Zoom allows participants to send text messages to the group and each other; there is an option to save the chat to a file, however the format of the chat log is _extremely_ verbose, for example emoji reactions to messages appear like messages themselves, message threads are flattened, and other issues.
 
