@@ -6,10 +6,9 @@ Tiny, seemingly pointless, interactive fiction game to play with a state machine
 """
 from pprint import pp
 import random
-import time
 
 from helpers import in_test, pretty
-from  smallmachine import StateMachine
+from smallmachine import StateMachine
 #####
 
 
@@ -145,12 +144,10 @@ world = StateMachine(rules, "start")
 
 ###  Main  ###
 print("Smooth Sailing", flush=True)
-time.sleep(0.1)  # HACK: wait for flush; sometimes prompt prints out-of-order with print output in spite of flush=True
 out = world(input("Press enter to start. "))
 if out:
     print(out, flush=True)
 while True:
-    time.sleep(0.1)  # HACK: wait for flush
     out = world(input("> "))
     if out:
         print(out, flush=True)
