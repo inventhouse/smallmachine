@@ -61,7 +61,7 @@ class StateMachine(object):
                     response = a(result=result, **context) if callable(a) else a
                     if d is not ...:
                         self.state = d
-                    self._trace(result=result, response=response, new_state=self.state, **context,)
+                    self._trace(result=result, response=response, new_state=self.state, **context)
                     return response
             else:
                 raise ValueError(f"State '{self.state}' did not recognize input {self._input_count}: '{input}'")
