@@ -124,7 +124,7 @@ rules = {
         ("look", in_test("l", "look"), pretty(Location.enter_action), ...),
 
         # Inspection:
-        ("scry", "scry", pretty((lambda machine, **_: pp(machine.pp_dict())), "scry"), ...),
+        ("scry", "scry", pretty((lambda machine, **_: pp(machine.status_dict())), "scry"), ...),
 
         # Exception testing commands:
         ("kaboom", "kaboom", explode_action, ...),  # raises ValueError

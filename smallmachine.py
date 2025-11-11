@@ -102,7 +102,7 @@ class StateMachine(object):
             yield self._transition_fmt.format(**transition)
 
 
-    def pp_dict(self):
+    def status_dict(self):
         """Returns a dictionary of the machine's current status for inspecting or pretty-printing."""
         return {
             "Rules": self.rules,

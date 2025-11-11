@@ -188,7 +188,7 @@ def format_message_slack(message, level=0, recipients=("Everyone",)):
 if __name__ == "__main__":
     import sys
     chat_parser = ChatParser()
-    # pp(chat_parser.parser.pp_dict())
+    # pp(chat_parser.parser.status_dict())
 
     chat_file = sys.argv[1] if len(sys.argv) > 1 else None
     if chat_file:
