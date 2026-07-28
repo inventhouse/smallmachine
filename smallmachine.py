@@ -1,4 +1,4 @@
-# SmallMachine: Copyright © 2021-2025 Benjamin Holt - MIT License
+# SmallMachine: Copyright © 2021-2026 Benjamin Holt - MIT License
 
 from collections import deque
 #####
@@ -40,18 +40,18 @@ class StateMachine(object):
         self._state = s
 
 
-    def __call__(self, input):
-        """Tests an input against the explicit rules for the current state plus the implicit rules from the ... (Ellipsis) state.
+    def __call__(self, input, **context):
+        """Tests an input against the explicit rules for the current state plus the implicit rules from the ... (Ellipsis) state.  Any additional context arguments are passed on to rule components and tracers.
 
-        As the rules are evaluated, a context dictionary is built; these keys and values are available to callable rule components as keyword arguments.  When a rule's test succeeds, its action is evaluated, the machine transitions, and the response is returned; if no rule succeeds, `ValueError` is raised.
+        As the rules are evaluated, the context dictionary is updated; all these keys and values are available to callable rule components as keyword arguments.  When a rule's test succeeds, its action is evaluated, the machine transitions, and the response is returned; if no rule succeeds, `ValueError` is raised.
 
         At the end of a successful transition, the internal and any custom tracer is called with a transition format and context arguments.
         """
         self._input_count += 1
-        context = {
+        context.update({
             "machine": self, "state": self.state, 
             "input_count": self._input_count, "input": input,
-        }
+        })
         try:
             rule_list = self.rules[self.state] + self.rules.get(..., [])
             for l,t,a,d in rule_list:
