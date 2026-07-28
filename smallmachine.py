@@ -40,7 +40,7 @@ class StateMachine(object):
         self._state = s
 
 
-    def __call__(self, input, **context):
+    def __call__(self, input, /, **context):
         """Tests an input against the explicit rules for the current state plus the implicit rules from the ... (Ellipsis) state.  Any additional context arguments are passed on to rule components and tracers.
 
         As the rules are evaluated, the context dictionary is updated; all these keys and values are available to callable rule components as keyword arguments.  When a rule's test succeeds, its action is evaluated, the machine transitions, and the response is returned; if no rule succeeds, `ValueError` is raised.
