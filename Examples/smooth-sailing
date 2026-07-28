@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2019-2025 Benjamin Holt -- MIT License
+# Copyright (c) 2019-2026 Benjamin Holt -- MIT License
 
 """
 Tiny, seemingly pointless, interactive fiction game to play with a state machine.
@@ -65,13 +65,13 @@ below = Location(
 
 messages = {
     "sail": ("You", ["set", "adjust", "tack",], "your sail", ["to", "toward", "for"], "{}."),
-    "sleep": ("The bunk is", ["soft", "comfortable", "warm", "cozy",], "and you", ["rest", "sleep", "snooze", "nap", "doze",], ["well", "deeply", "blissfully", "nicely"], "."),
-    "log": [("Weather was", ["fair", "good", "lovely",], "."),
+    "sleep": ("The bunk is", ["soft", "comfortable", "warm", "cozy",], "and you", ["rest", "sleep", "snooze", "nap", "doze",], ["well.", "deeply.", "blissfully.", "nicely."]),
+    "log": [("Weather was", ["fair.", "good.", "lovely.",]),
         (
             ["Good", "Quick", "Slow",], "sailing",
             [
                 "today", 
-                ("this", ["morning", "afternoon", "evening",], ".")
+                ("this", ["morning.", "afternoon.", "evening.",])
             ]
         ),
     ],
