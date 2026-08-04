@@ -1,6 +1,7 @@
 # SmallMachine: Copyright © 2021-2026 Benjamin Holt - MIT License
 
 from collections import deque
+from itertools import chain
 #####
 
 
@@ -53,8 +54,7 @@ class StateMachine(object):
             "input_count": self._input_count, "input": input,
         })
         try:
-            rule_list = self.rules[self.state] + self.rules.get(..., [])
-            for l,t,a,d in rule_list:
+            for l,t,a,d in chain(self.rules[self.state], self.rules.get(..., [])):
                 context.update({"label": l, "test": t, "action": a, "destination": d})
                 result = t(**context) if callable(t) else t == input
                 if result:
