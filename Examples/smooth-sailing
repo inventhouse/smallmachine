@@ -102,6 +102,11 @@ def write_action(**_):
 @pretty
 def explode_action(**_):
     raise ValueError("Ka-Boom!")
+
+
+@pretty
+def debug_action(**context):
+    breakpoint()
 #####
 
 
@@ -125,6 +130,7 @@ rules = {
 
         # Inspection:
         ("scry", "scry", pretty((lambda machine, **_: pp(machine.status_dict())), "scry"), ...),
+        ("debug", "debug", debug_action, ...),
 
         # Exception testing commands:
         ("kaboom", "kaboom", explode_action, ...),  # raises ValueError
