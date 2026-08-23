@@ -11,15 +11,15 @@ The rules dictionary maps each state to a list of rule tuples, each of which inc
 
 Rules and Evaluation
 --------------------
-Input is tested against the explicit rules for the current state plus the implicit rules from the `...` (Ellipsis) state.
+Each event is tested against the explicit rules for the current state plus the implicit rules from the `...` (Ellipsis) state.
 
-As the rules are evaluated, a context dictionary is built; these keys and values are available to callable rule components as keyword arguments.  Context arguments available when rules are evaluated are: `machine`, `state`, `input_count`, `input`, and elements of the currently evaluating rule: `label`, `test`, `action`, and `destination`.
+As the rules are evaluated, a context dictionary is built; these keys and values are available to callable rule components as keyword arguments.  Context arguments available when rules are evaluated are: `machine`, `state`, `event_count`, `event`, and elements of the currently evaluating rule: `label`, `test`, `action`, and `destination`.
 
 Each rule consists of a label, test, action, and destination, which work as follows:
 
 - **Label:** Usually a string, used for identifying the "successful" rule when tracing.
 
-- **Test:** Called with context arguments; if the result is truish, the rule succeeds, and no other rules are tested.  If the test is not callable, it is compared (equal) to the input.
+- **Test:** Called with context arguments; if the result is truish, the rule succeeds, and no other rules are tested.  If the test is not callable, it is compared (equal) to the event.
 
 - **Action:** When a test succeeds, the action is called with context arguments, including `result` from the test above; the action's `response` will be included in the context arguments for the tracer and returned by this call.  If the action is not callable, it is returned as the response.
 
@@ -41,7 +41,7 @@ _See [smallmachine.py](smallmachine.py)_
 
 The best way to fully understand how it works is to read the code.  The implementation really is very small - just under 70 lines of code (plus another ~40 lines of comments and blanks) - and the core evaluation engine is under a dozen lines in the `try` block of `StateMachine.__call__`; I think most use-cases I've had for it were bigger than the StateMachine class itself.
 
-The two trickiest aspects of Python I use are `for...else` to raise `ValueError` if no rule accepted the input, and `**context` to make a lot of different information available to tests and actions while allowing them to pluck out just what they need and ignore the rest.  For the second, it's important to understand how parameters in Python actually work; particularly how "required" and "optional" parameters in a definition are distinct from "positional" and "keyword" arguments in a call.  I definitely recommend looking at the helpers and examples to see how useful this can be.
+The two trickiest aspects of Python I use are `for...else` to raise `ValueError` if no rule accepted the event, and `**context` to make a lot of different information available to tests and actions while allowing them to pluck out just what they need and ignore the rest.  For the second, it's important to understand how parameters in Python actually work; particularly how "required" and "optional" parameters in a definition are distinct from "positional" and "keyword" arguments in a call.  I definitely recommend looking at the helpers and examples to see how useful this can be.
 
 Note that there is only the `StateMachine` class, I found no use for "State" nor "Rule/Transition" classes, they just made things more complicated and less powerful; frankly I'm puzzled that every other state machine module I've looked at on PyPI uses such constructs.
 
@@ -75,7 +75,7 @@ The video-meeting platform Zoom allows participants to send text messages to the
 
 Here we'll write a parser that will re-thread the messages, roll-up reactions, and even do some filtering as well.
 
-##### Step 0: Format and Input Fixture
+##### Step 0: Format and Event Fixture
 
 _See [zoom-chat-parser-0](Examples/zoom-chat-parser-0)_
 
@@ -117,7 +117,7 @@ _See [zoom-chat-parser-2](Examples/zoom-chat-parser-2)_
 
 `diff -u Examples/zoom-chat-parser-1 Examples/zoom-chat-parser-2`
 
-Now that we have some input, a machine, and a way to run it, we can start building the tests we need to parse the input and the states we need to organize those tests; our parser begins to take shape.
+Now that we have some events, a machine, and a way to run it, we can start building the tests we need to parse the events and the states we need to organize those tests; our parser begins to take shape.
 
 ```
 T> 1: start('') > blank: <re.Match object; span=(0, 0), match=''> -- None --> start
@@ -129,7 +129,7 @@ T> 5: message('    Anyone still remember NFTs?') > line: <re.Match object; span=
 
 Once it runs successfully over our input snippet, we can start running it over full chat logs and find cases we missed, add them to our fixture, and make our parser robust enough to process the "real" data.
 
-Already we have a parser!  Sure, it doesn't _do_ anything with the data it parses yet, but we can read through the trace and watch it navigating the input.
+Already we have a parser!  Sure, it doesn't _do_ anything with the data it parses yet, but we can read through the trace and watch it navigating the events.
 
 ##### Step 3: Data Model and Actions
 
@@ -137,7 +137,7 @@ _See [zoom-chat-parser-3](Examples/zoom-chat-parser-3)_
 
 `diff -u Examples/zoom-chat-parser-2 Examples/zoom-chat-parser-3`
 
-Some parsers are pure transformers and don't need a data model, their actions will just return modified versions of the input; this one, however, needs a threaded message model, actions to build that model from the input, and some helpers.  This is, of course, is about the hardest part, but the real magic was being able to work through all of the data navigation first, and now we can just focus on modeling and plumbing.
+Some parsers are pure transformers and don't need a data model, their actions will just return modified versions of the event; this one, however, needs a threaded message model, actions to build that model from the events, and some helpers.  This is, of course, is about the hardest part, but the real magic was being able to work through all of the data navigation first, and now we can just focus on modeling and plumbing.
 
 ```
 (ChatMessage(time_str='15:01:39',
@@ -153,7 +153,7 @@ _See [zoom-chat-parser-4](Examples/zoom-chat-parser-4)_
 
 `diff -u Examples/zoom-chat-parser-3 Examples/zoom-chat-parser-4`
 
-At this point we have raw input parsing into our data model; we can do whatever we want with it!  Here, we're going to do some filtering and format the threaded messages so they'll look good when re-posted in Slack.
+At this point we have raw events parsing into our data model; we can do whatever we want with it!  Here, we're going to do some filtering and format the threaded messages so they'll look good when re-posted in Slack.
 
 ```
 _(15:01) *Michael M*:_

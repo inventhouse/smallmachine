@@ -11,7 +11,7 @@ class StateMachine(object):
     """
 
     def __init__(self, rules, state, tracer=False, history=10):
-        """Create a state machine instance which can be called with input and returns output from evaluating the rules for the current state.
+        """Create a state machine instance which can be called with an event and returns output from evaluating the rules for the current state.
 
         The rules dictionary maps each state to a list of rule tuples, each of which includes a label, a test, an action, and a destination.
 
@@ -26,7 +26,7 @@ class StateMachine(object):
         self.state = state
         self.tracer = tracer
         self.history = deque(maxlen=history)
-        self._input_count = 0
+        self._event_count = 0
 
 
     @property
@@ -41,22 +41,22 @@ class StateMachine(object):
         self._state = s
 
 
-    def __call__(self, input, /, **context):
-        """Tests an input against the explicit rules for the current state plus the implicit rules from the ... (Ellipsis) state.  Any additional context arguments are passed on to rule components and tracers.
+    def __call__(self, event, /, **context):
+        """Tests an event against the explicit rules for the current state plus the implicit rules from the ... (Ellipsis) state.  Any additional context arguments are passed on to rule components and tracers.
 
         As the rules are evaluated, the context dictionary is updated; all these keys and values are available to callable rule components as keyword arguments.  When a rule's test succeeds, its action is evaluated, the machine transitions, and the response is returned; if no rule succeeds, `ValueError` is raised.
 
         At the end of a successful transition, the internal and any custom tracer is called with a transition format and context arguments.
         """
-        self._input_count += 1
+        self._event_count += 1
         context.update({
-            "machine": self, "state": self.state, 
-            "input_count": self._input_count, "input": input,
+            "machine": self, "state": self.state,
+            "event_count": self._event_count, "event": event,
         })
         try:
             for l,t,a,d in chain(self.rules[self.state], self.rules.get(..., [])):
                 context.update({"label": l, "test": t, "action": a, "destination": d})
-                result = t(**context) if callable(t) else t == input
+                result = t(**context) if callable(t) else t == event
                 if result:
                     response = a(result=result, **context) if callable(a) else a
                     if d is not ...:
@@ -64,16 +64,16 @@ class StateMachine(object):
                     self._trace(result=result, response=response, new_state=self.state, **context)
                     return response
             else:
-                raise ValueError(f"State '{self.state}' did not recognize input {self._input_count}: '{input}'")
+                raise ValueError(f"State '{self.state}' did not recognize event {self._event_count}: '{event}'")
         except Exception as e:
             if self.history:
                 trace_lines = "\n  ".join(self.build_trace())
                 e.add_note(f"StateMachine Traceback (most recent last):\n  {trace_lines}")
-            e.add_note(f"  {self._input_count}: {self.state}('{input}') > {context['label']} >> 💥\n{type(e).__name__}: {e}")
+            e.add_note(f"  {self._event_count}: {self.state}('{event}') > {context['label']} >> 💥\n{type(e).__name__}: {e}")
             raise
 
 
-    _transition_fmt = "{input_count}: {state}('{input}') > {label}: {result} -- {response} --> {new_state}"
+    _transition_fmt = "{event_count}: {state}('{event}') > {label}: {result} -- {response} --> {new_state}"
     def _trace(self, **transition):
         """Built-in tracing of transitions or calling of optional custom tracer, and building traceback history."""
         if self.tracer:

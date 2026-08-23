@@ -8,18 +8,18 @@ import re
 
 ###  Helpers  ###
 class in_test(object):
-    """Callable to test if input is in a collection and format a nice __str/repr__."""
+    """Callable to test if event is in a collection and format a nice __str/repr__."""
     def __init__(self, *in_list):
         self.in_list = in_list
 
-    def __call__(self, input, **_):
-        return input in self.in_list
+    def __call__(self, event, **_):
+        return event in self.in_list
 
     def __str__(self):
-        return f"input in {self.in_list}"
+        return f"event in {self.in_list}"
 
     def __repr__(self):
-        return f"<test input in {self.in_list}>"
+        return f"<test event in {self.in_list}>"
 
 
 class match_test(object):
@@ -27,14 +27,14 @@ class match_test(object):
     def __init__(self, test_re_str):
         self.test_re = re.compile(test_re_str)
 
-    def __call__(self, input, **_):
-        return self.test_re.match(input)
+    def __call__(self, event, **_):
+        return self.test_re.match(event)
 
     def __str__(self):
-        return f"'{self.test_re.pattern}'.match(input)"
+        return f"'{self.test_re.pattern}'.match(event)"
 
     def __repr__(self):
-        return f"<test '{self.test_re.pattern}'.match(input)>"
+        return f"<test '{self.test_re.pattern}'.match(event)>"
 
 
 class search_test(object):
@@ -42,14 +42,14 @@ class search_test(object):
     def __init__(self, test_re_str):
         self.test_re = re.compile(test_re_str)
 
-    def __call__(self, input, **_):
-        return self.test_re.search(input)
+    def __call__(self, event, **_):
+        return self.test_re.search(event)
 
     def __str__(self):
-        return f"'{self.test_re.pattern}'.search(input)"
+        return f"'{self.test_re.pattern}'.search(event)"
 
     def __repr__(self):
-        return f"<test '{self.test_re.pattern}'.search(input)>"
+        return f"<test '{self.test_re.pattern}'.search(event)>"
 
 
 class pretty:

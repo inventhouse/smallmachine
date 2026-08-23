@@ -81,8 +81,8 @@ messages = {
 
 ###  Tests & Actions  ###
 @pretty
-def not_crash_test(input, **_):
-    return input != "crash"
+def not_crash_test(event, **_):
+    return event != "crash"
 
 
 @pretty
@@ -129,7 +129,7 @@ rules = {
         # Exception testing commands:
         ("kaboom", "kaboom", explode_action, ...),  # raises ValueError
         ("warp", "warp", "Warp out of this dimension", "elsewhere"),  # Transition to a non-existent state
-        ("anything except crash", not_crash_test, "Sorry, you can't do that.", ...),  # Doesn't recognize input "crash"
+        ("anything except crash", not_crash_test, "Sorry, you can't do that.", ...),  # Doesn't recognize event "crash"
     ]
 }
 #####

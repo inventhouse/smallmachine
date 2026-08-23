@@ -32,7 +32,7 @@ class TestStateMachine(TestCase):
 
 
     def tracer(self, _, **t):
-        f = "{input_count}: {state}('{input}') > {label}: {result} -- {response} --> {new_state}"  # Copied the format so the tests don't depend on the implementation
+        f = "{event_count}: {state}('{event}') > {label}: {result} -- {response} --> {new_state}"  # Copied the format so the tests don't depend on the implementation
         self.trace_line = f.format(**t)
 
 
@@ -89,11 +89,11 @@ class TestStateMachine(TestCase):
 
         self.assertEqual(len(self.machine.history), 4)  # One loop in B should be folded
         expected_history = [
-            {"input_count": 1, "state": "A", "input": "b", "label": "move to b", "result": True, "response": "A-B", "new_state": "B"},
-            # {"input_count": 2, "state": "B", "input": "1", "label": "match 1", "result": True, "response": "one", "new_state": "B"},  # Folded away
-            {"input_count": 3, "state": "B", "input": "2", "label": "match 2", "result": True, "response": "two", "new_state": "B", "loop_count": 2},
-            {"input_count": 4, "state": "B", "input": "c", "label": "move to c", "result": True, "response": "B-C", "new_state": "C"},
-            {"input_count": 5, "state": "C", "input": "a", "label": "move to a", "result": True, "response": "C-A", "new_state": "A"},
+            {"event_count": 1, "state": "A", "event": "b", "label": "move to b", "result": True, "response": "A-B", "new_state": "B"},
+            # {"event_count": 2, "state": "B", "event": "1", "label": "match 1", "result": True, "response": "one", "new_state": "B"},  # Folded away
+            {"event_count": 3, "state": "B", "event": "2", "label": "match 2", "result": True, "response": "two", "new_state": "B", "loop_count": 2},
+            {"event_count": 4, "state": "B", "event": "c", "label": "move to c", "result": True, "response": "B-C", "new_state": "C"},
+            {"event_count": 5, "state": "C", "event": "a", "label": "move to a", "result": True, "response": "C-A", "new_state": "A"},
         ]
         for i, expected in enumerate(expected_history):
             transition = self.machine.history[i]
@@ -117,8 +117,8 @@ class TestStateMachine(TestCase):
         expected = dict(
             machine=machine,
             state="A",
-            input_count=1,
-            input="a",
+            event_count=1,
+            event="a",
             label="test a",
             test=a_test,
             action=a_action,
@@ -130,8 +130,8 @@ class TestStateMachine(TestCase):
             result=True,
             machine=machine,
             state="A",
-            input_count=1,
-            input="a",
+            event_count=1,
+            event="a",
             label="test a",
             test=a_test,
             action=a_action,
@@ -145,8 +145,8 @@ class TestStateMachine(TestCase):
             new_state='B',
             machine=machine,
             state="A",
-            input_count=1,
-            input="a",
+            event_count=1,
+            event="a",
             label="test a",
             test=a_test,
             action=a_action,
